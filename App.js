@@ -4,40 +4,43 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput } from 'reac
 
 export default function App() {
   const [heartColor, setHeartColor] = useState('green');
-  const [backgroundColor, setBackgroundColor] = useState('blue');
+  const [backgroundColor, setBackgroundColor] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [secure, setSecure] = useState(true); // controlar visibilidade da senha
-
-  const toggleHeartColor = () => {
-    setHeartColor(heartColor === 'blue' ? 'green' : 'blue');
-  };
-
-  const trocarFundo = () => {
-    setBackgroundColor(backgroundColor === 'green' ? 'blue' : 'green');
-    setHeartColor(heartColor === 'blue' ? 'green' : 'blue');
-  };
+  const [secure, setSecure] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const showAlert = () => {
-    try {
-      alert(`Olá ${username}`);
-    } catch (error) {
-      console.error("Erro no show alert: " + error);
+    if (!username.trim() || !password.trim()) {
+      alert('Preencha todos os campos antes de continuar.');
+      return;
+    }
+
+    if (username === 'admin' && password === 'admin') {
+      setLoggedIn(true);
+      alert(`Login efetuado com sucesso!`);
+    } else {
+      alert('Usuário ou senha inválido.');
+      setLoggedIn(false);
     }
   };
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <Image
-        source={{ uri: 'https://github.com/LuizzOliveira.png' }}
-        style={styles.image}
-      />
-      <Text style={styles.text}>Olá, Sou o Luiz sua IA! 🚀</Text>
+      {/* Renderiza a imagem somente se logado */}
+      {loggedIn && (
+        <Image
+          source={{ uri: 'https://github.com/LuizzOliveira.png' }}
+          style={styles.image}
+        />
+      )}
+
+      <Text style={styles.text}>LOGIN</Text>
 
       <TextInput
         style={styles.input}
         placeholder="Username"
-        onChangeText={text => setUsername(text)} 
+        onChangeText={text => setUsername(text)}
         value={username}
       />
 
@@ -46,17 +49,13 @@ export default function App() {
           style={styles.inputPassword}
           placeholder="Senha"
           secureTextEntry={secure}
-          onChangeText={text => setPassword(text)} 
+          onChangeText={text => setPassword(text)}
           value={password}
         />
         <TouchableOpacity onPress={() => setSecure(!secure)}>
           <AntDesign name={secure ? 'eyeo' : 'eye'} size={24} color="gray" />
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity onPress={toggleHeartColor}>
-        <AntDesign name='heart' size={24} color={heartColor} />
-      </TouchableOpacity>
 
       <TouchableOpacity onPress={showAlert} style={styles.customButton}>
         <Text style={styles.buttonText}>Clique aqui</Text>
@@ -72,9 +71,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     borderRadius: 100,
+    marginBottom: 20,
   },
   text: {
     fontSize: 30,
